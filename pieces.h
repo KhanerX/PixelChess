@@ -132,7 +132,7 @@ class Knight : public Piece {
         for (int i = 0; i < 8; i++){
             int new_i = position.F + ix[i];
             int new_j = position.S + iy[i];
-            if(0 <= new_i && new_i < 7 && 0 <= new_j && new_j < 7)
+            if(0 <= new_i && new_i <= 7 && 0 <= new_j && new_j <= 7)
                 if(!board->state[new_i][new_j].is_occupied() || board->state[new_i][new_j].occupant[0]->color != color)
                     ans.insert(pii(new_i, new_j));
 
