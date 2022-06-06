@@ -31,7 +31,18 @@ class RenderEngine{
 
         void draw_board(ChessBoard* board, pii selected, Engine e){
             window->clear(sf::Color::Black);
+            place_sprite("graphics/reset.png", pii(720, 720 - 88 - 8));
+            place_sprite("graphics/checkbox.png", pii(720, 720 - 88 - 8 - 88));
+            sf::Texture texture;
+            texture.loadFromFile("graphics/ss.png");
+            sf::Sprite sprite;
+            sprite.setScale(2, 2);
+            sprite.setTexture(texture);
+            sprite.setPosition(720, 720 - 88 - 8 - 88 - 88);
 
+            window->draw(sprite);
+            if(e.use_ai)
+                place_sprite("graphics/mark.png", pii(720, 720 - 88 - 8 - 88));
             place_sprite("graphics/board.png", pii(0, 0));
             set<pii> valid_moves;
             set<pii> type2_critical_moves;
@@ -50,12 +61,14 @@ class RenderEngine{
 
                     if(valid_moves.find(pii(i, j)) != valid_moves.end()){
                         place_sprite("graphics/move.png", sprite_pos);
-                        if(e.is_critical_type2(pii(selected.F, selected.S), pii(i, j), board)){
-                            place_sprite("graphics/critical2.png", sprite_pos);
+                        if(e.use_ai){
+                            if(e.is_critical_type2(pii(selected.F, selected.S), pii(i, j), board)){
+                                place_sprite("graphics/critical2.png", sprite_pos);
 
+                            }
+                            else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
+                                place_sprite("graphics/critical1.png", sprite_pos);
                         }
-                        //else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
-                        //    place_sprite("graphics/critical1.png", sprite_pos);
                     }
 
                     if(board->state[i][j].occupant.size() != 0){

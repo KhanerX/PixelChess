@@ -58,7 +58,6 @@ class ChessBoard {
 
     ChessBoard(){
         num++;
-        cout << "new chessboard ans" << ChessBoard::num << endl;
     }
 
     void place_piece(Piece* p){

@@ -53,10 +53,9 @@ int main(){
     }
 
     board = e.calculate_threats(board);
+    e.original_board = e.copy(board);
 
-    //cout << e.is_critical_type2(pii(4, 5), pii(5, 4), board) << endl;
-
-    sf::RenderWindow window(sf::VideoMode(720, 720), "Pixel Chess :3");
+    sf::RenderWindow window(sf::VideoMode(722+90, 720), "Pixel Chess :3");
 
     RenderEngine re = RenderEngine{ &window, 4};
     pii selected = pii(-1, -1);
@@ -101,9 +100,18 @@ int main(){
                         
                     }
                 }
+                else if(mouse_pos.x > 720 && mouse_pos.y > 624 && mouse_pos.x < 720+88 && mouse_pos.y < 622+88){
+                    board = e.copy(e.original_board);
+                    pii selected = pii(-1, -1);
+                    turn = 0;
+                }
+                else if(mouse_pos.x > 720 && mouse_pos.y > 624-88 && mouse_pos.x < 720+88 && mouse_pos.y < 622){
+                    e.use_ai = !e.use_ai;
+                }
                 re.draw_board(board, selected, e); //Draw the current state to window;
             }
-            //cout << selected.F << " " << selected.S << endl;
+            
+            
         }
         
     }

@@ -11,6 +11,8 @@
 class Engine {
     public:
     ChessBoard* test = new ChessBoard();
+    ChessBoard* original_board;
+    bool use_ai = false;
     ChessBoard* calculate_threats(ChessBoard* board){
         for (int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -86,6 +88,44 @@ class Engine {
         }
                 
         return ans;
+    }
+    
+    ChessBoard* copy(ChessBoard* board){
+        ChessBoard* ans = new ChessBoard();
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(board->state[i][j].is_occupied()){
+                    string sq = board->state[i][j].occupant[0]->representation;
+                    string col = "";
+                    col.push_back(sq[1]);
+                    if(sq[0] == 'P'){
+                        Pawn* p = new Pawn(pii(i, j), col);
+                        ans->place_piece(p);
+                    }
+                    else if(sq[0] == 'N'){
+                        Knight* p = new Knight(pii(i, j), col);
+                        ans->place_piece(p);
+                    }
+                    else if(sq[0] == 'K'){
+                        King* p = new King(pii(i, j), col);
+                        ans->place_piece(p);
+                    }
+                    else if(sq[0] == 'B'){
+                        Bishop* p = new Bishop(pii(i, j), col);
+                        ans->place_piece(p);
+                    }
+                    else if(sq[0] == 'R'){
+                        Rook* p = new Rook(pii(i, j), col);
+                        ans->place_piece(p);
+                    }
+                    else if(sq[0] == 'Q'){
+                        Queen* p = new Queen(pii(i, j), col);
+                        ans->place_piece(p);
+                    } 
+                }
+            }
+        }
+        return this->calculate_threats(ans);
     }
 
     bool is_mate(ChessBoard* board, char color){
@@ -192,5 +232,43 @@ class Engine {
         test = this->calculate_threats(test);
         return true;
     }
+    bool is_critical_type1(pii source, pii destination, ChessBoard* test){
+
+        string color = test->state[source.F][source.S].occupant[0]->color;
+
+        vector<Piece*> op0 = test->pieces;
+        bool is_oc0 = false;
+        Piece* upiece0;
+        if(test->state[destination.F][destination.S].is_occupied()){
+            is_oc0 = true;
+            upiece0 = test->state[destination.F][destination.S].occupant[0];
+        }
+        
+        pii init_pos = destination;
+        test = this->move(source, destination, test); //Do the move
+        test = this->calculate_threats(test);
+
+        for(Piece* op_piece : test->pieces){ 
+            if(op_piece->color == color)
+                continue;
+            for(pii op_move : this->sanitize(op_piece->position, op_piece->get_moves(test), test)){ //Foreach opponent move
+                if(this->is_critical_type2(op_piece->position, op_move, test)){
+                    test = this->move(init_pos, source, test); //Undo the first move
+                    if(is_oc0)
+                        test->place_piece(upiece0);
+                    test->pieces = op0;
+                    test = this->calculate_threats(test);
+                    return true;
+                }
+            }
+        }
+        test = this->move(init_pos, source, test); //Undo the first move
+        if(is_oc0)
+            test->place_piece(upiece0);
+        test->pieces = op0;
+        test = this->calculate_threats(test);
+        return false;
+    }
+
 };
 
