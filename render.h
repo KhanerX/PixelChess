@@ -39,6 +39,7 @@ class RenderEngine{
                 pii selected_pos = pii(8 + selected.S * 88, 8 + (7 - selected.F) * 88);
                 place_sprite("graphics/select.png", selected_pos);
                 valid_moves = e.sanitize(selected, board->state[selected.F][selected.S].occupant[0]->get_moves(board), board);
+                
             }
             for (int i = 7; i >= 0; i--){
                 for(int j = 0; j < 8; j++){
@@ -49,8 +50,10 @@ class RenderEngine{
 
                     if(valid_moves.find(pii(i, j)) != valid_moves.end()){
                         place_sprite("graphics/move.png", sprite_pos);
-                        //if(e.is_critical(pii(selected.F, selected.S), pii(i, j), board))
-                        //   place_sprite("graphics/critical2.png", sprite_pos);
+                        if(e.is_critical_type2(pii(selected.F, selected.S), pii(i, j), board))
+                            place_sprite("graphics/critical2.png", sprite_pos);
+                        //else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
+                        //    place_sprite("graphics/critical1.png", sprite_pos);
                     }
 
                     if(board->state[i][j].occupant.size() != 0){

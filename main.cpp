@@ -8,10 +8,16 @@
 #define F first 
 #define S second 
 
+int ChessBoard::num = 0;
+int Piece::num = 0;
+
+Rook* Queen::replace_rook = new Rook(pii(0, 0), "W");
+Bishop* Queen::replace_bishop = new Bishop(pii(0, 0), "W");
 
 int main(){
 
     ChessBoard* board = new ChessBoard();
+    
     Engine e;
     for (int i = 7; i >= 0; i--){
         for(int j = 0; j < 8; j++){
@@ -45,7 +51,10 @@ int main(){
             }            
         }
     }
+
     board = e.calculate_threats(board);
+
+    //cout << e.is_critical_type2(pii(4, 5), pii(5, 5), board) << endl;
 
     sf::RenderWindow window(sf::VideoMode(720, 720), "Pixel Chess :3");
 
@@ -66,14 +75,14 @@ int main(){
                 if (mouse_pos.x > 8 && mouse_pos.y > 8 && mouse_pos.x < 712 && mouse_pos.y < 712){
                     int i_click = 7 - ((mouse_pos.y - 8) / 88);
                     int j_click = (mouse_pos.x - 8) / 88;
-
-                    if(selected.F == -1 && board->state[i_click][j_click].is_occupied() && board->state[i_click][j_click].occupant[0]->color == string()+turns[turn%2])
+                    
+                    if(selected.F == -1 && board->state[i_click][j_click].is_occupied() && board->state[i_click][j_click].occupant[0]->color == string()+turns[turn%2]){
                         selected = pii(i_click, j_click);
-
+                    }
                     else if(selected.F != -1){
                         pii source = selected;
                         pii destination = pii(i_click, j_click);
-
+                        
                         set<pii> valid_moves = e.sanitize(source, board->state[source.F][source.S].occupant[0]->get_moves(board), board);
                         if(valid_moves.find(destination) != valid_moves.end()){
                             board = e.move(source, destination, board);
