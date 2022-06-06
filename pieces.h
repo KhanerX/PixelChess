@@ -16,6 +16,7 @@ map<string, string> negative = {{"B", "W"}, {"W", "B"}};
 class ChessBoard;
 class Piece {
     public:
+        static int num;
     pair<int, int> position;
     string color;
     string representation;
@@ -23,6 +24,7 @@ class Piece {
     bool has_moved = false;
 
     Piece(pii init_position, string init_color){
+        num++;
         position = init_position;
         color = init_color;
         representation = ".";
@@ -47,9 +49,17 @@ class Square {
 };
 
 class ChessBoard {
+    
     public:
-    Square state[8][8];
-    vector<Piece*> pieces;
+        static int num;
+        Square state[8][8];
+        vector<Piece*> pieces;
+
+
+    ChessBoard(){
+        num++;
+        cout << "new chessboard ans" << ChessBoard::num << endl;
+    }
 
     void place_piece(Piece* p){
         state[p->position.F][p->position.S].occupant.push_back(p);
@@ -228,6 +238,8 @@ class Rook : public Piece {
         return ans;
     }
     bool does_threaten(pii pos, ChessBoard* board){
+        if(pos == position) return false;
+        
         if(pos.F == position.F){
             for (int i = min(pos.S, position.S) + 1; i < max(pos.S, position.S); i++)
                 if(board->state[pos.F][i].is_occupied())
@@ -288,6 +300,8 @@ class Bishop : public Piece {
         return ans;
     }
     bool does_threaten(pii pos, ChessBoard* board){
+        if(pos == position) return false;
+
         if(abs(pos.F - position.F) != abs(pos.S - position.S))
             return false;
         if(pos.F == position.F)
@@ -309,14 +323,18 @@ class Bishop : public Piece {
 
 class Queen : public Piece {
         public:
+            static Rook* replace_rook;
+            static Bishop* replace_bishop;
     Queen(pii init_position, string init_color): Piece(init_position, init_color){
         representation = "Q" + init_color;
     }
     
     set<pii> get_moves(ChessBoard* board){
         set<pii> ans = {};
-        Rook* replace_rook = new Rook(position, color);
-        Bishop* replace_bishop = new Bishop(position, color);
+        Queen::replace_rook->position = position;
+        Queen::replace_rook->color = color;
+        Queen::replace_bishop->position = position;
+        Queen::replace_bishop->color = color;
 
         set<pii> rook_moves = replace_rook->get_moves(board);
         set<pii> bishop_moves = replace_bishop->get_moves(board); 
@@ -326,9 +344,10 @@ class Queen : public Piece {
         return ans;
     }
     bool does_threaten(pii pos, ChessBoard* board){
-        Rook* replace_rook = new Rook(position, color);
-        Bishop* replace_bishop = new Bishop(position, color);
-        
+        Queen::replace_rook->position = position;
+        Queen::replace_rook->color = color;
+        Queen::replace_bishop->position = position;
+        Queen::replace_bishop->color = color;
         return replace_rook->does_threaten(pos, board) | replace_bishop->does_threaten(pos, board);
     }
 };
