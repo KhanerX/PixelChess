@@ -62,9 +62,10 @@ class Engine {
         
         set<pii> ans = {};
         string color = board->state[source.F][source.S].occupant[0]->color;
-        cout << "HERE 2" << endl;
+
         for(pii move : moves){
             
+            vector<Piece*> op = board->pieces;
             bool is_oc = false;
             Piece* upiece;
             if(board->state[move.F][move.S].is_occupied()){
@@ -80,6 +81,7 @@ class Engine {
             board = this->move(move, source, board); //Undo the move
             if(is_oc)
                 board->place_piece(upiece);
+            board->pieces = op;
             board = this->calculate_threats(board);
         }
                 
@@ -101,8 +103,10 @@ class Engine {
     }
 
     bool is_critical_type2(pii source, pii destination, ChessBoard* test){
-        cout << "HERE" << endl;
+
         string color = test->state[source.F][source.S].occupant[0]->color;
+
+        vector<Piece*> op0 = test->pieces;
         bool is_oc0 = false;
         Piece* upiece0;
         if(test->state[destination.F][destination.S].is_occupied()){
@@ -113,15 +117,14 @@ class Engine {
         pii init_pos = destination;
         test = this->move(source, destination, test); //Do the move
         test = this->calculate_threats(test);
-        test->print_state();
-        cout << " First Move " << endl;
-        
+
         for(Piece* op_piece : test->pieces){ 
+
             if(op_piece->color == color)
                 continue;
             for(pii op_move : this->sanitize(op_piece->position, op_piece->get_moves(test), test)){ //Foreach opponent move
-                cout << "NEW MOVE: " << op_piece->representation << " " << op_move.F << " " << op_move.S<< endl;
                 bool is_mate = false;
+                vector<Piece*> op = test->pieces;
                 bool is_oc = false;
                 Piece* upiece;
                 if(test->state[op_move.F][op_move.S].is_occupied()){
@@ -132,15 +135,12 @@ class Engine {
                 test = this->move(op_piece->position, op_move, test); //Do the opponent move
                 test = this->calculate_threats(test);
 
-                test->print_state();
-                cout << " Opponent Move " << endl;
-                
                 for(Piece* my_piece: test->pieces){                   
                     if(my_piece->color != color)
                         continue;
                     for(pii my_move : this->sanitize(my_piece->position, my_piece->get_moves(test), test)){     //For each ally move
                         
-                        
+                        vector<Piece*> op2 = test->pieces;
                         bool is_oc2 = false;
                         Piece* upiece2;
                         if(test->state[my_move.F][my_move.S].is_occupied()){
@@ -150,18 +150,15 @@ class Engine {
                         pii pos = my_piece->position;
                         test = this->move(my_piece->position, my_move, test);
                         test = this->calculate_threats(test);
-                        test->print_state();
-                        cout << " 1 " << endl;
                         if(this->is_mate(test, negative[color][0])){  //If after the move opponent is checkmate
                             is_mate=true;
-                            cout << "THIS IS MATE" << endl;
                         }
                         test = this->move(my_move, pos, test); //Undo move
                         if(is_oc2)
                             test->place_piece(upiece2);
+                        test->pieces = op2;
                         test = this->calculate_threats(test);
-                        test->print_state();
-                        cout << "2" << endl;
+
                         if(is_mate)
                             break;
                     }
@@ -173,15 +170,15 @@ class Engine {
                 test = this->move(op_move, op_pos, test); //Undo the move
                 if(is_oc)
                     test->place_piece(upiece);
+                test->pieces = op;
                 test = this->calculate_threats(test);
 
-                test->print_state();
-                cout << "Undo op move" << endl;
 
                 if(!is_mate){
                     test = this->move(init_pos, source, test); //Undo the first move
                     if(is_oc0)
                         test->place_piece(upiece0);
+                    test->pieces = op0;
                     test = this->calculate_threats(test);
                     return false; //there exists an opponent move that doesnt have immediate check mate;
                 }
@@ -191,6 +188,7 @@ class Engine {
         test = this->move(init_pos, source, test); //Undo the first move
         if(is_oc0)
             test->place_piece(upiece0);
+        test->pieces = op0;
         test = this->calculate_threats(test);
         return true;
     }

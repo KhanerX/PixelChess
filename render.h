@@ -50,8 +50,10 @@ class RenderEngine{
 
                     if(valid_moves.find(pii(i, j)) != valid_moves.end()){
                         place_sprite("graphics/move.png", sprite_pos);
-                        if(e.is_critical_type2(pii(selected.F, selected.S), pii(i, j), board))
+                        if(e.is_critical_type2(pii(selected.F, selected.S), pii(i, j), board)){
                             place_sprite("graphics/critical2.png", sprite_pos);
+
+                        }
                         //else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
                         //    place_sprite("graphics/critical1.png", sprite_pos);
                     }
