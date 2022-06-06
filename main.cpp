@@ -54,7 +54,7 @@ int main(){
 
     board = e.calculate_threats(board);
 
-    //cout << e.is_critical_type2(pii(4, 5), pii(5, 5), board) << endl;
+    //cout << e.is_critical_type2(pii(4, 5), pii(5, 4), board) << endl;
 
     sf::RenderWindow window(sf::VideoMode(720, 720), "Pixel Chess :3");
 
