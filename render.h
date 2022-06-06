@@ -54,8 +54,8 @@ class RenderEngine{
                             place_sprite("graphics/critical2.png", sprite_pos);
 
                         }
-                        //else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
-                        //    place_sprite("graphics/critical1.png", sprite_pos);
+                        else if(e.is_critical_type1(pii(selected.F, selected.S), pii(i, j), board))
+                            place_sprite("graphics/critical1.png", sprite_pos);
                     }
 
                     if(board->state[i][j].occupant.size() != 0){
