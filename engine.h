@@ -12,6 +12,7 @@ class Engine {
     public:
     ChessBoard* test = new ChessBoard();
     ChessBoard* original_board;
+    bool use_ai = false;
     ChessBoard* calculate_threats(ChessBoard* board){
         for (int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
